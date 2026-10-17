@@ -107,7 +107,8 @@ pub type RwBTreeMap<K, V> = tokio::sync::RwLock<BTreeMap<K, V>>;
 // 107: add redact_tools to ai_chat_shares.
 // 108: create oncall_phone_verifications and org_telephony.
 // 109: add last_run columns to reports.
-pub const DB_SCHEMA_VERSION: u64 = 109;
+// 110: add running_by and lease_until to org_cleanup_tasks.
+pub const DB_SCHEMA_VERSION: u64 = 110;
 pub const DB_SCHEMA_KEY: &str = "/db_schema_version/";
 
 // global version variables
@@ -2416,6 +2417,12 @@ pub struct Common {
         help = "If true (default true), new org can be automatically created through ingestion for root user. This can be changed in the runtime."
     )]
     pub create_org_through_ingestion: bool,
+    #[env_config(
+        name = "ZO_ORG_CLEANUP_POLL_INTERVAL_SECS",
+        default = 3600,
+        help = "How often (seconds, default 3600) the compactor drains org deletion tasks and promotes orgs whose grace period ended. 0 pauses both jobs."
+    )]
+    pub org_cleanup_poll_interval_secs: u64,
     #[env_config(
         name = "ZO_ORG_INVITE_EXPIRY",
         default = 7,
